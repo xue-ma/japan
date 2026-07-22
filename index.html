@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#102a43" />
+  <title>Japan 2026 Timeline</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4efe6;
+      --bg-2: #e9f0ea;
+      --card: rgba(255, 255, 255, 0.82);
+      --card-strong: #ffffff;
+      --text: #16202a;
+      --muted: #5d6b79;
+      --line: rgba(22, 32, 42, 0.12);
+      --accent: #c86b3c;
+      --accent-2: #2f6f6d;
+      --accent-3: #735cdd;
+      --shadow: 0 16px 42px rgba(25, 34, 44, 0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max: 860px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(200, 107, 60, 0.16), transparent 34%),
+        radial-gradient(circle at top right, rgba(47, 111, 109, 0.16), transparent 28%),
+        linear-gradient(180deg, var(--bg), var(--bg-2));
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px 14px 40px;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom));
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 22px 18px 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,0.5);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -36px -70px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(120, 180, 173, 0.28), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(47, 111, 109, 0.1);
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(30px, 7vw, 48px);
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
+      max-width: 52ch;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .meta {
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(22, 32, 42, 0.08);
+      border-radius: 18px;
+      padding: 12px 12px 11px;
+    }
+
+    .meta span {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .meta strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.3;
+    }
+
+    .route-strip {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 14px 2px 2px;
+      margin: 0 -2px 18px;
+      scrollbar-width: none;
+    }
+
+    .route-strip::-webkit-scrollbar { display: none; }
+
+    .route-chip {
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(22, 32, 42, 0.1);
+      background: rgba(255,255,255,0.75);
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--text);
+      box-shadow: 0 8px 22px rgba(21, 32, 45, 0.05);
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 10px;
+      padding-left: 18px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      bottom: 4px;
+      left: 7px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(200, 107, 60, 0.75), rgba(47, 111, 109, 0.65));
+    }
+
+    .entry {
+      position: relative;
+      margin-bottom: 16px;
+      padding-left: 16px;
+      animation: rise 0.42s ease both;
+    }
+
+    .entry::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 18px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(200, 107, 60, 0.14);
+    }
+
+    .entry.transit::before {
+      background: var(--accent-2);
+      box-shadow: 0 0 0 5px rgba(47, 111, 109, 0.13);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(22, 32, 42, 0.08);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid rgba(22, 32, 42, 0.06);
+      background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.76));
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.18;
+      letter-spacing: -0.03em;
+    }
+
+    .subline {
+      margin-top: 6px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(200, 107, 60, 0.1);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .card-body {
+      padding: 14px 16px 16px;
+    }
+
+    .panel-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(22, 32, 42, 0.08);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .list li {
+      position: relative;
+      padding-left: 18px;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .list li::before {
+      content: "•";
+      position: absolute;
+      left: 2px;
+      top: 0;
+      color: var(--accent-2);
+      font-weight: 900;
+    }
+
+    .notice-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .notice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(47, 111, 109, 0.08);
+      color: #244a48;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .notice.warn {
+      background: rgba(200, 107, 60, 0.1);
+      color: #7d4124;
+    }
+
+    .notice .icon {
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.8);
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .hours {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hours span {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(22, 32, 42, 0.06);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .footer {
+      margin-top: 18px;
+      padding: 12px 2px 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .progress {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(22, 32, 42, 0.08);
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      position: relative;
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(22, 32, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.35s ease;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (min-width: 720px) {
+      .shell { padding: 28px 20px 56px; }
+      .meta-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .card-body { padding: 16px 18px 18px; }
+      .timeline { padding-left: 22px; }
+      .entry { padding-left: 20px; }
+      .notice-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Japan 2026 / 时间线</div>
+      <h1>东京・箱根・京都・大阪</h1>
+
+      <div class="meta-grid" aria-label="trip summary">
+        <div class="meta"><span>主线日期</span><strong>07/30 - 08/11</strong></div>
+        <div class="meta"><span>城市顺序</span><strong>东京 → 箱根 → 京都 → 大阪</strong></div>
+      </div>
+
+      <div class="progress" aria-label="trip progress">
+        <div class="progress-top">
+          <span>旅程节奏</span>
+          <strong id="progressText">0 / 4 城市段</strong>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-labels">
+          <span>东京</span>
+          <span>箱根</span>
+          <span>京都</span>
+          <span>大阪</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="route-strip" aria-label="route chips">
+      <div class="route-chip">07/30 - 08/04 东京</div>
+      <div class="route-chip">08/04 - 08/05 箱根</div>
+      <div class="route-chip">08/05 - 08/09 京都</div>
+      <div class="route-chip">08/09 - 08/11 大阪</div>
+    </nav>
+
+    <section class="timeline" id="timeline"></section>
+
+    <footer class="footer">
+      页面保留了原文中写明的营业时间、门票和交通提醒；未展开酒店和准备清单部分，因为这次只按“时间线”生成。
+    </footer>
+  </main>
+
+  <script>
+    const entries = [
+      {
+        type: "day",
+        city: "东京",
+        date: "07/30",
+        dateRange: "07/30 ~ 08/04",
+        title: "东京第一天：池袋、巢鸭、夜晚接父母",
+        summary: "以北东京和接机动线为主，尽量保留体力，晚上再去羽田机场。",
+        route: ["池袋站周边", "巢鸭站", "羽田机场接爸妈"],
+        highlights: [
+          "池袋和巢鸭安排在同一天，路程相对顺手，适合轻松开场。",
+          "晚上去羽田机场接父母，注意预留晚高峰交通时间。"
+        ],
+        notice: [
+          { kind: "info", text: "如果当天航班或到达时间有波动，先保证接机，不必把景点排满。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "东京",
+        date: "07/31",
+        dateRange: "07/31",
+        title: "涩谷 + 新宿",
+        summary: "经典城市漫步日，适合把大学、神社、公园和夜景串起来。",
+        route: ["国学院大学博物馆", "原宿", "表参道", "代代木公园", "明治神宫", "新宿御苑", "歌舞伎町", "十字路口"],
+        highlights: [
+          "国学院大学博物馆：10:00 - 18:00。",
+          "这一带适合步行切换，建议上午轻松、下午继续城市街区。",
+          "新宿十字路口和歌舞伎町适合晚上拍照。"
+        ],
+        hours: ["国学院大学博物馆 10:00 - 18:00"],
+        notice: [
+          { kind: "warn", text: "原宿、表参道和新宿都很适合步行，但夏天会很热，注意补水和防晒。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "东京",
+        date: "08/01",
+        dateRange: "08/01",
+        title: "上野 + 浅草",
+        summary: "博物馆、公园、神社和传统街区的组合，适合放慢节奏。",
+        route: ["东京国立博物馆", "上野恩赐公园", "东京大学", "东照宫", "根津神社", "浅草寺", "隅田公园"],
+        highlights: [
+          "东京国立博物馆：1000日元，9:30 - 17:00。",
+          "上野和浅草之间可灵活穿插午餐、休息和商店街。",
+          "傍晚在隅田公园附近看河岸景色也很合适。"
+        ],
+        hours: ["东京国立博物馆 9:30 - 17:00", "门票 1000日元"],
+        notice: [
+          { kind: "info", text: "上野一带景点密度高，适合以博物馆或公园作为中转点分段游览。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "东京",
+        date: "08/02",
+        dateRange: "08/02",
+        title: "银座换酒店 + 银座 / 皇居 / 筑地 / 六本木",
+        summary: "上午搬酒店，下午走东京核心城区，夜景可放到惠比寿。",
+        route: ["银座", "皇居", "筑地市场", "芝公园", "东京塔", "六本木之丘", "麻布台之丘", "惠比寿站花园广场"],
+        highlights: [
+          "早上去银座换酒店住宿。",
+          "惠比寿站花园广场看夜景可延后到晚上，时间可到约 23:30。",
+          "这一天交通比较分散，建议把午后安排成慢节奏。"
+        ],
+        hours: ["惠比寿花园广场夜景 ~23:30"],
+        notice: [
+          { kind: "info", text: "银座、皇居、六本木都适合搭配地铁移动，减少步行暴露在高温里。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "东京",
+        date: "08/03",
+        dateRange: "08/03",
+        title: "机动日：目黑 / 代官山 / 台场",
+        summary: "用于补前几天没去成的点，也可以把最想去的夜景或展馆放在这一天。",
+        route: ["林试之森公园", "台场海滨公园", "日本科学未来馆", "富士电视台总部", "TeamLab Planets"],
+        highlights: [
+          "TeamLab Planets：门票 200 多，通常需要 1.5 到 3 小时，营业时间 8:00 - 22:00。",
+          "台场这条线适合和海边散步、展馆、夜景组合。",
+          "如果前几天很累，这天也可以只选一到两个点。"
+        ],
+        hours: ["TeamLab Planets 8:00 - 22:00", "参考停留 1.5 - 3 小时"],
+        notice: [
+          { kind: "warn", text: "TeamLab 类展馆人流通常较多，建议提前确认购票和入场时段。" }
+        ]
+      },
+      {
+        type: "transit",
+        city: "东京 → 箱根",
+        date: "08/04",
+        dateRange: "08/04",
+        title: "东京前往箱根",
+        summary: "清晨出发，车程约 2.5 小时，适合把半天留给抵达后的箱根景点。",
+        route: ["浅草线 / 新桥", "东海道新干线 / 小田原", "箱根山线"],
+        transport: [
+          "6点就可以出发。",
+          "路程约 2 个半小时，费用约 2800 日元。",
+          "建议在小田原站购买或提前准备箱根周游券。"
+        ],
+        highlights: [
+          "箱根周游券 2 日券成人 7100 日元。",
+          "建议前一天下午 4 点前在新宿西购买实体或电子票。"
+        ],
+        notice: [
+          { kind: "info", text: "若行李较大，尽量在出发前确认换乘台阶和站内步行距离，减少赶车压力。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "箱根",
+        date: "08/04",
+        dateRange: "08/04 ~ 08/05",
+        title: "抵达强罗后：海盗船、缆车和大涌谷",
+        summary: "到达后直接进入箱根经典路线，先把观光游线串起来。",
+        route: ["强罗", "元箱根港", "海盗船", "桃源台", "空中缆车", "大涌谷"],
+        highlights: [
+          "早上抵达强罗后，可以先走元箱根港，再坐海盗船去桃源台。",
+          "空中缆车去大涌谷是箱根最经典的一段。",
+          "这一天以交通体验为主，别把行程排得太满。"
+        ],
+        notice: [
+          { kind: "info", text: "箱根地区交通联动很强，周游券能省去多次单独购票的麻烦。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "箱根",
+        date: "08/05",
+        dateRange: "08/05",
+        title: "箱根补充日 + 晚上转京都",
+        summary: "上午在强罗周边补景点，下午向京都移动。",
+        route: ["雕刻之森美术馆", "强罗公园", "美术馆", "宫之下", "汤本", "京都"],
+        highlights: [
+          "上午适合强罗周边慢逛。",
+          "下午可选宫之下和汤本。",
+          "下午 5 点以前出发去京都更稳妥，路程约 3.5 小时，费用约 13000 日元。"
+        ],
+        transport: [
+          "方案一：桃源台线 → 东海道新干线 → 京都站。",
+          "方案二：强罗站 → 箱根汤本站 → 小田原站 → 京都站。"
+        ],
+        hours: ["箱根周游券 2 日使用范围内"],
+        notice: [
+          { kind: "warn", text: "强罗到民宿有一段上坡，若带大行李要预留体力。" },
+          { kind: "info", text: "上午 8 点后以及退房后可以寄存行李。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "京都",
+        date: "08/06",
+        dateRange: "08/05 ~ 08/09",
+        title: "京都东山一带 + 琵琶湖花火大会",
+        summary: "清晨出发，走一条经典的寺庙、坂道、神社和市场路线。",
+        route: ["清水寺", "二三年坂", "高台寺", "八坂神社", "衹园", "花见小路", "锦市场"],
+        highlights: [
+          "一大早 6 点出发最稳，天气和人流都更友好。",
+          "清水寺可选 400 日元。",
+          "若体力允许，也可以延伸成银阁路线。",
+          "晚上 7:30 到 8:30 有琵琶湖花火大会，京都过去大约 50 分钟，建议 5 点左右出发。"
+        ],
+        hours: ["清水寺 400日元（可选）", "花火大会 19:30 - 20:30"],
+        notice: [
+          { kind: "warn", text: "东山和花见小路人多，建议尽量早去，把拍照和慢逛放在上午。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "京都",
+        date: "08/07",
+        dateRange: "08/07",
+        title: "伏见稻荷、岚山、金阁和市内经典点",
+        summary: "景点非常密集的一天，建议严格控制节奏，优先挑重点。",
+        route: ["伏见稻荷大社", "岚山", "天龙寺", "金阁", "天满宫", "二条城", "京都御苑"],
+        highlights: [
+          "建议一大早出发，先拿下最热门的点。",
+          "天龙寺 500 日元，金阁 500 日元，二条城 1300 日元。",
+          "如果当天已经很累，岚山和伏见稻荷可作为重点二选一。"
+        ],
+        hours: ["天龙寺 500日元", "金阁 500日元", "二条城 1300日元"],
+        notice: [
+          { kind: "info", text: "京都的公交单次约 230 日元，日券不太划算，按实际搭乘更灵活。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "京都",
+        date: "08/08",
+        dateRange: "08/08",
+        title: "北山 / 贵船 / 琉璃光院",
+        summary: "车程较长，适合把单日主题集中到山里景点。",
+        route: ["三千院", "贵船神社", "琉璃光院"],
+        highlights: [
+          "路上需要大约一个半小时。",
+          "这一日偏远，适合早出发。",
+          "山里景点更依赖天气和体力，建议备好饮水和轻食。"
+        ],
+        notice: [
+          { kind: "warn", text: "如果前一天已经很晚回程，这天最好预留弹性，不必强求全部完成。" }
+        ]
+      },
+      {
+        type: "transit",
+        city: "京都 → 大阪",
+        date: "08/09",
+        dateRange: "08/09",
+        title: "京都前往大阪",
+        summary: "一早前往大阪，距离短、成本低，适合直接开始大阪市区游览。",
+        route: ["京都站", "大阪"],
+        transport: [
+          "一大早出发。",
+          "路程约 1 小时，费用约 700 日元。"
+        ],
+        notice: [
+          { kind: "info", text: "这一段交通简单，重点是保持行李整理高效，抵达后马上进入大阪游览。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "大阪",
+        date: "08/09",
+        dateRange: "08/09 ~ 08/11",
+        title: "梅田 / 大阪城 / 夜景和水上玩法",
+        summary: "城市观景、博物馆、游船和摩天轮都可以集中在这一天。",
+        route: ["梅田空中庭院", "天空美术馆", "Hep Five 摩天轮", "圣玛丽亚号", "大阪生活今昔馆", "大阪城", "大阪历史博物馆", "水上巴士"],
+        highlights: [
+          "梅田空中庭院展望台：9:30 - 15:00。",
+          "天空美术馆：10:00 - 18:00。",
+          "Hep Five 摩天轮：11:00 - 23:00。",
+          "圣玛丽亚号观光船：11:00 - 26:00，每小时零分出发。",
+          "水上巴士（大阪城港）：10:00 - 16:00，每小时零分出发。"
+        ],
+        hours: ["梅田空中庭院 9:30 - 15:00", "天空美术馆 10:00 - 18:00", "Hep Five 11:00 - 23:00"],
+        notice: [
+          { kind: "info", text: "大阪两日周游券可覆盖部分地铁和私营铁路，不包含 JR 线。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "大阪",
+        date: "08/10",
+        dateRange: "08/10",
+        title: "道顿堀、天王寺和夜间游船",
+        summary: "这天偏向大阪南区和夜游项目，建议把换票和船班时间提前处理好。",
+        route: ["道顿堀水上观光船", "wonder cruise", "上方浮世绘", "通天阁", "天王寺动物园", "四天王寺", "阿倍野Harukas", "大阪市立自然史博物馆", "长居植物园"],
+        highlights: [
+          "道顿堀水上观光船建议 10 点去换晚上的票。",
+          "wonder cruise：16:10 - 21:30。",
+          "天王寺动物园：9:30 - 17:00。",
+          "四天王寺：8:30 - 16:30。",
+          "通天阁和阿倍野 Harukas 都适合放到傍晚。"
+        ],
+        hours: ["wonder cruise 16:10 - 21:30", "天王寺动物园 9:30 - 17:00", "四天王寺 8:30 - 16:30"],
+        notice: [
+          { kind: "warn", text: "游船和夜景项目通常依赖换票或排队，最好把时间卡紧一些。" }
+        ]
+      },
+      {
+        type: "day",
+        city: "大阪",
+        date: "08/11",
+        dateRange: "08/11",
+        title: "购物收尾：心斋桥 / 难波 / 黑门市场",
+        summary: "最后一天留给商场、吃喝和补货，节奏可以放慢。",
+        route: ["心斋桥", "难波", "黑门市场", "难波八坂神社"],
+        highlights: [
+          "这天以商场购物为主。",
+          "心斋桥和难波之间很适合步行串联。",
+          "黑门市场可以作为最后的吃喝和伴手礼补充。"
+        ],
+        notice: [
+          { kind: "info", text: "回程日建议预留打包和机场移动时间，不要把最后一站排得过满。" }
+        ]
+      }
+    ];
+
+    const timeline = document.getElementById('timeline');
+    const totalSegments = 4;
+    const currentSegment = 4;
+    document.getElementById('progressText').textContent = `${currentSegment} / ${totalSegments} 城市段`;
+    document.getElementById('progressFill').style.width = `${(currentSegment / totalSegments) * 100}%`;
+
+    const renderList = (items) => items.map((item) => `<li>${item}</li>`).join('');
+    const renderNotices = (notes) => notes.map((note) => `
+      <div class="notice ${note.kind === 'warn' ? 'warn' : ''}">
+        <div class="icon">${note.kind === 'warn' ? '!' : 'i'}</div>
+        <div>${note.text}</div>
+      </div>
+    `).join('');
+
+    timeline.innerHTML = entries.map((entry, index) => {
+      const tag = entry.type === 'transit' ? '转场' : '行程';
+      const transitClass = entry.type === 'transit' ? ' transit' : '';
+      return `
+        <article class="entry${transitClass}" style="animation-delay:${Math.min(index * 0.05, 0.35)}s">
+          <section class="card">
+            <header class="card-header">
+              <div class="subline">
+                <span class="tag">${tag}</span>
+                <span>${entry.city}</span>
+                <span>·</span>
+                <span>${entry.dateRange}</span>
+              </div>
+              <h2>${entry.title}</h2>
+              <div class="subline">
+                <span>${entry.summary}</span>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="panel-grid">
+                <div class="panel">
+                  <h3>路线 / 站点</h3>
+                  <ul class="list">${renderList(entry.route)}</ul>
+                </div>
+                ${entry.highlights ? `
+                  <div class="panel">
+                    <h3>重点提示</h3>
+                    <ul class="list">${renderList(entry.highlights)}</ul>
+                  </div>
+                ` : ''}
+                ${entry.transport ? `
+                  <div class="panel">
+                    <h3>交通信息</h3>
+                    <ul class="list">${renderList(entry.transport)}</ul>
+                  </div>
+                ` : ''}
+                ${entry.hours ? `
+                  <div class="panel">
+                    <h3>营业时间 / 费用</h3>
+                    <div class="hours">${entry.hours.map((h) => `<span>${h}</span>`).join('')}</div>
+                  </div>
+                ` : ''}
+                ${entry.notice ? `
+                  <div class="panel">
+                    <h3>注意事项</h3>
+                    <div class="notice-grid">${renderNotices(entry.notice)}</div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </section>
+        </article>
+      `;
+    }).join('');
+  </script>
+</body>
+</html>
