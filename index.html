@@ -505,6 +505,47 @@
       margin-bottom: 0;
     }
 
+    /* Back to Top Floating Button */
+    .back-to-top {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(22, 32, 42, 0.12);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(22, 32, 42, 0.16);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px) scale(0.9);
+      transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.2s ease;
+      z-index: 9999;
+    }
+
+    .back-to-top.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+    }
+
+    .back-to-top:hover {
+      background: var(--card-strong);
+      color: var(--accent);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 12px 28px rgba(200, 107, 60, 0.22);
+    }
+
+    .back-to-top:active {
+      transform: translateY(0) scale(0.98);
+    }
+
     .notice-grid {
       display: grid;
       gap: 8px;
@@ -662,6 +703,12 @@
       页面保留了原文中写明的营业时间、门票和交通提醒；未展开酒店和准备清单部分，因为这次只按“时间线”生成。
     </footer>
   </main>
+
+  <button id="backToTop" class="back-to-top" aria-label="返回顶部" onclick="scrollToTop()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+  </button>
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script>
@@ -1331,6 +1378,21 @@
       el.setAttribute('data-map-index', idx);
       mapObserver.observe(el);
     });
+
+    // Back to Top button logic
+    const backToTopBtn = document.getElementById('backToTop');
+
+    window.scrollToTop = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('is-visible');
+      } else {
+        backToTopBtn.classList.remove('is-visible');
+      }
+    }, { passive: true });
   </script>
 </body>
 </html>
