@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#102a43" />
   <title>Japan 2026 Timeline</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
       color-scheme: light;
@@ -281,13 +282,50 @@
 
     .list li.route-item {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      padding-left: 10px;
+      transition: background-color 0.2s ease, transform 0.15s ease;
     }
 
     .list li.route-item::before {
-      top: 0;
+      display: none;
+    }
+
+    .list li.route-item:hover {
+      background: rgba(22, 32, 42, 0.05);
+    }
+
+    .list li.route-item.is-active {
+      background: rgba(200, 107, 60, 0.15);
+      font-weight: 650;
+    }
+
+    .entry.transit .list li.route-item.is-active {
+      background: rgba(47, 111, 109, 0.18);
+    }
+
+    .route-num {
+      flex: 0 0 auto;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(200, 107, 60, 0.14);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .entry.transit .route-num {
+      background: rgba(47, 111, 109, 0.16);
+      color: var(--accent-2);
     }
 
     .route-name {
@@ -319,6 +357,90 @@
       top: 0;
       color: var(--accent-2);
       font-weight: 900;
+    }
+
+    /* Visual Map Panel Styles */
+    .map-panel {
+      padding: 12px;
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .map-header h3 {
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .map-subtitle {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .day-map {
+      width: 100%;
+      height: 250px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(22, 32, 42, 0.1);
+      background: #eef2f5;
+      z-index: 1;
+    }
+
+    .custom-map-pin {
+      background: transparent !important;
+      border: none !important;
+    }
+
+    .pin-badge {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      border: 2px solid #ffffff;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .pin-badge.transit {
+      background: var(--accent-2);
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 12px !important;
+      padding: 4px 6px !important;
+      box-shadow: 0 8px 24px rgba(22, 32, 42, 0.18) !important;
+    }
+
+    .map-popup-content {
+      padding: 4px 6px;
+      font-family: inherit;
+    }
+
+    .popup-title {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .popup-link {
+      display: inline-block;
+      font-size: 11px;
+      color: var(--accent-2);
+      font-weight: 700;
+      text-decoration: none;
     }
 
     .notice-grid {
@@ -479,6 +601,7 @@
     </footer>
   </main>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const entries = [
       {
@@ -759,6 +882,117 @@
       }
     ];
 
+    const SPOT_COORDS = {
+      // 东京
+      "池袋站周边": [35.7295, 139.7109],
+      "巢鸭站": [35.7334, 139.7393],
+      "羽田机场接爸妈": [35.5494, 139.7798],
+      "国学院大学博物馆": [35.6563, 139.7090],
+      "原宿": [35.6702, 139.7027],
+      "表参道": [35.6672, 139.7088],
+      "代代木公园": [35.6717, 139.6949],
+      "明治神宫": [35.6764, 139.6993],
+      "新宿御苑": [35.6852, 139.7101],
+      "歌舞伎町": [35.6948, 139.7029],
+      "十字路口": [35.6905, 139.7005],
+      "东京国立博物馆": [35.7188, 139.7765],
+      "上野恩赐公园": [35.7146, 139.7732],
+      "东京大学": [35.7126, 139.7619],
+      "东照宫": [35.7157, 139.7712],
+      "根津神社": [35.7202, 139.7608],
+      "浅草寺": [35.7148, 139.7967],
+      "隅田公园": [35.7135, 139.8003],
+      "银座": [35.6718, 139.7650],
+      "皇居": [35.6852, 139.7528],
+      "筑地市场": [35.6654, 139.7707],
+      "芝公园": [35.6559, 139.7490],
+      "东京塔": [35.6586, 139.7454],
+      "六本木之丘": [35.6605, 139.7292],
+      "麻布台之丘": [35.6609, 139.7408],
+      "惠比寿站花园广场": [35.6424, 139.7133],
+      "林试之森公园": [35.6267, 139.7032],
+      "台场海滨公园": [35.6293, 139.7753],
+      "日本科学未来馆": [35.6193, 139.7764],
+      "富士电视台总部": [35.6270, 139.7745],
+      "TeamLab Planets": [35.6491, 139.7898],
+
+      // 东京 -> 箱根
+      "浅草线 / 新桥": [35.6664, 139.7583],
+      "东海道新干线 / 小田原": [35.2562, 139.1553],
+      "箱根山线": [35.2333, 139.1039],
+
+      // 箱根
+      "强罗": [35.2497, 139.0483],
+      "元箱根港": [35.2014, 139.0305],
+      "海盗船": [35.1991, 139.0253],
+      "桃源台": [35.2389, 139.0069],
+      "空中缆车": [35.2427, 139.0191],
+      "大涌谷": [35.2424, 139.0184],
+      "雕刻之森美术馆": [35.2443, 139.0514],
+      "强罗公园": [35.2486, 139.0461],
+      "美术馆": [35.2458, 139.0520],
+      "宫之下": [35.2422, 139.0583],
+      "汤本": [35.2333, 139.1039],
+      "京都": [34.9858, 135.7588],
+
+      // 京都
+      "清水寺": [34.9949, 135.7850],
+      "二三年坂": [34.9981, 135.7816],
+      "高台寺": [35.0004, 135.7813],
+      "八坂神社": [35.0037, 135.7785],
+      "衹园": [35.0037, 135.7752],
+      "花见小路": [35.0022, 135.7738],
+      "锦市场": [35.0050, 135.7649],
+      "伏见稻荷大社": [34.9671, 135.7727],
+      "岚山": [35.0158, 135.6777],
+      "天龙寺": [35.0158, 135.6777],
+      "金阁": [35.0394, 135.7292],
+      "天满宫": [35.0315, 135.7352],
+      "二条城": [35.0142, 135.7482],
+      "京都御苑": [35.0254, 135.7622],
+      "三千院": [35.1218, 135.8344],
+      "贵船神社": [35.1216, 135.7629],
+      "琉璃光院": [35.0642, 135.8105],
+
+      // 京都 -> 大阪
+      "京都站": [34.9858, 135.7588],
+      "大阪": [34.7024, 135.4959],
+
+      // 大阪
+      "梅田空中庭园": [34.7053, 135.4900],
+      "天空美术馆": [34.7056, 135.4897],
+      "Hep Five 摩天轮": [34.7040, 135.5003],
+      "圣玛丽亚号": [34.6545, 135.4287],
+      "大阪生活今昔馆": [34.7107, 135.5113],
+      "大阪城": [34.6873, 135.5262],
+      "大阪历史博物馆": [34.6826, 135.5209],
+      "水上巴士": [34.6896, 135.5318],
+      "道顿堀水上观光船": [34.6687, 135.5013],
+      "wonder cruise": [34.6687, 135.5013],
+      "上方浮世绘": [34.6674, 135.5020],
+      "通天阁": [34.6525, 135.5063],
+      "天王寺动物园": [34.6514, 135.5082],
+      "四天王寺": [34.6542, 135.5165],
+      "阿倍野Harukas": [34.6459, 135.5140],
+      "大阪市立自然史博物馆": [34.6111, 135.5218],
+      "长居植物园": [34.6111, 135.5235],
+      "心斋桥": [34.6750, 135.5005],
+      "难波": [34.6640, 135.4966],
+      "黑门市场": [34.6653, 135.5068],
+      "难波八坂神社": [34.6616, 135.4965]
+    };
+
+    const getSpotCoords = (name) => {
+      if (SPOT_COORDS[name]) return SPOT_COORDS[name];
+      const cleaned = name.trim();
+      for (const key in SPOT_COORDS) {
+        if (cleaned.includes(key) || key.includes(cleaned)) {
+          return SPOT_COORDS[key];
+        }
+      }
+      return null;
+    };
+
     const timeline = document.getElementById('timeline');
     const totalSegments = 4;
     const currentSegment = 4;
@@ -771,19 +1005,23 @@
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     };
 
-    const renderList = (items, entry = null) => items.map((item) => {
+    const renderList = (items, entry = null, entryIndex = null) => items.map((item, spotIdx) => {
       if (!entry) {
         return `<li>${item}</li>`;
       }
 
       const mapUrl = buildMapUrl(entry, item);
+      const coords = getSpotCoords(item);
+      const hasCoords = coords ? 'has-coords' : '';
       return `
-        <li class="route-item">
+        <li class="route-item ${hasCoords}" data-day="${entryIndex}" data-spot="${spotIdx}" onclick="highlightSpot(${entryIndex}, ${spotIdx})">
+          <span class="route-num">${spotIdx + 1}</span>
           <span class="route-name">${item}</span>
-          <a class="map-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer" aria-label="在 Google 地图中打开 ${item}">地图</a>
+          <a class="map-link" href="${mapUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" aria-label="在 Google 地图中打开 ${item}">地图</a>
         </li>
       `;
     }).join('');
+
     const renderNotices = (notes) => notes.map((note) => `
       <div class="notice ${note.kind === 'warn' ? 'warn' : ''}">
         <div class="icon">${note.kind === 'warn' ? '!' : 'i'}</div>
@@ -828,7 +1066,7 @@
               <div class="panel-grid">
                 <div class="panel">
                   <h3>路线 / 站点</h3>
-                  <ul class="list">${renderList(entry.route, entry)}</ul>
+                  <ul class="list">${renderList(entry.route, entry, index)}</ul>
                 </div>
                 ${entry.highlights ? `
                   <div class="panel">
@@ -854,12 +1092,154 @@
                     <div class="notice-grid">${renderNotices(entry.notice)}</div>
                   </div>
                 ` : ''}
+                <div class="panel map-panel">
+                  <div class="map-header">
+                    <h3>📍 视觉地图</h3>
+                    <span class="map-subtitle">点击列表站点可在地图定位</span>
+                  </div>
+                  <div class="day-map" id="map-day-${index}"></div>
+                </div>
               </div>
             </div>
           </section>
         </article>
       `;
     }).join('');
+
+    const mapInstances = {};
+    const markerInstances = {};
+
+    const initDayMap = (entry, index) => {
+      const container = document.getElementById(`map-day-${index}`);
+      if (!container || mapInstances[index]) return;
+
+      const validSpots = [];
+      entry.route.forEach((item, spotIdx) => {
+        const coords = getSpotCoords(item);
+        if (coords) {
+          validSpots.push({ item, spotIdx, coords });
+        }
+      });
+
+      if (validSpots.length === 0) {
+        const parentPanel = container.closest('.map-panel');
+        if (parentPanel) parentPanel.style.display = 'none';
+        return;
+      }
+
+      const isTransit = entry.type === 'transit';
+      const defaultCenter = validSpots[0].coords;
+
+      const map = L.map(`map-day-${index}`, {
+        zoomControl: true,
+        attributionControl: false,
+        scrollWheelZoom: false
+      }).setView(defaultCenter, 13);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        subdomains: 'abcd'
+      }).addTo(map);
+
+      const latLngs = [];
+      markerInstances[index] = {};
+
+      validSpots.forEach(({ item, spotIdx, coords }) => {
+        latLngs.push(coords);
+        const pinHtml = `<div class="pin-badge ${isTransit ? 'transit' : ''}">${spotIdx + 1}</div>`;
+        const icon = L.divIcon({
+          className: 'custom-map-pin',
+          html: pinHtml,
+          iconSize: [24, 24],
+          iconAnchor: [12, 12],
+          popupAnchor: [0, -12]
+        });
+
+        const googleUrl = buildMapUrl(entry, item);
+        const popupContent = `
+          <div class="map-popup-content">
+            <strong class="popup-title">${spotIdx + 1}. ${item}</strong>
+            <a class="popup-link" href="${googleUrl}" target="_blank" rel="noopener noreferrer">在 Google 地图中导航 &rarr;</a>
+          </div>
+        `;
+
+        const marker = L.marker(coords, { icon }).addTo(map);
+        marker.bindPopup(popupContent);
+        marker.on('click', () => {
+          highlightSpotInList(index, spotIdx);
+        });
+
+        markerInstances[index][spotIdx] = marker;
+      });
+
+      if (latLngs.length > 1) {
+        L.polyline(latLngs, {
+          color: isTransit ? '#2f6f6d' : '#c86b3c',
+          weight: 3,
+          opacity: 0.85,
+          dashArray: '6, 8',
+          lineCap: 'round'
+        }).addTo(map);
+
+        const bounds = L.latLngBounds(latLngs);
+        map.fitBounds(bounds, { padding: [36, 36] });
+      } else if (latLngs.length === 1) {
+        map.setView(latLngs[0], 14);
+      }
+
+      mapInstances[index] = map;
+    };
+
+    window.highlightSpot = (dayIndex, spotIdx) => {
+      highlightSpotInList(dayIndex, spotIdx);
+      const entry = entries[dayIndex];
+      if (!entry) return;
+
+      const item = entry.route[spotIdx];
+      const coords = getSpotCoords(item);
+      const map = mapInstances[dayIndex];
+
+      if (map && coords) {
+        map.flyTo(coords, Math.max(map.getZoom(), 14), { duration: 0.6 });
+        const marker = markerInstances[dayIndex]?.[spotIdx];
+        if (marker) {
+          marker.openPopup();
+        }
+      }
+    };
+
+    const highlightSpotInList = (dayIndex, spotIdx) => {
+      document.querySelectorAll(`[data-day="${dayIndex}"]`).forEach((el) => {
+        el.classList.remove('is-active');
+      });
+      const activeEl = document.querySelector(`[data-day="${dayIndex}"][data-spot="${spotIdx}"]`);
+      if (activeEl) {
+        activeEl.classList.add('is-active');
+      }
+    };
+
+    // IntersectionObserver for lazy map initialization & resize handling
+    const mapObserver = new IntersectionObserver((mapEntries) => {
+      mapEntries.forEach((obsEntry) => {
+        if (obsEntry.isIntersecting) {
+          const indexAttr = obsEntry.target.getAttribute('data-map-index');
+          if (indexAttr !== null) {
+            const idx = parseInt(indexAttr, 10);
+            if (!mapInstances[idx]) {
+              initDayMap(entries[idx], idx);
+            } else {
+              mapInstances[idx].invalidateSize();
+            }
+          }
+        }
+      });
+    }, { rootMargin: '300px 0px' });
+
+    document.querySelectorAll('.day-map').forEach((el) => {
+      const idx = el.id.replace('map-day-', '');
+      el.setAttribute('data-map-index', idx);
+      mapObserver.observe(el);
+    });
   </script>
 </body>
 </html>
